@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Jane Xie — design and product work.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Ccircle cx=%2716%27 cy=%2716%27 r=%2714%27 fill=%27%23FFBFF5%27 stroke=%27black%27 stroke-width=%272%27/%3E%3C/svg%3E">
+<title>Jane Xie</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@500&display=swap">
+<style>
+/* Layout: one rounded sheet, a top bar, then a full-width numbered index. Nothing else.
+   Theme: dark is the default. The warm off-white light theme lives in [data-theme="light"] below —
+   to ship light, swap the two token blocks (or set data-theme="light" on <html>). */
+:root {
+  --ground:   #0c0c0b;   /* behind the rounded sheet */
+  --sheet:    #0e0e0d;   /* page background */
+  --ink:      #ecebe7;   /* titles, body */
+  --ink-2:    #8d8b85;   /* metadata, labels */
+  --rule:     #2a2927;   /* hairlines */
+  --hover:    #1b1b19;   /* row hover wash */
+  --accent:   #7c8cff;   /* focus + active only */
+
+  --f-title: "Atkinson Hyperlegible Next", "Atkinson Hyperlegible", "Helvetica Neue", Arial, system-ui, sans-serif;
+  --f-mono:  var(--f-title);   /* one family for everything */
+
+  --row-h: 140px;
+  --title-size: clamp(2.1rem, 4.6vw, 4.25rem);
+  --num-col: calc(var(--title-size) * 1.75);   /* fits a two-digit number at title size */
+  --side: clamp(8px, 1.2vw, 20px);
+  --radius: 22px;
+  color-scheme: dark;
+
+  /* pink arrow cursor, hotspot at the tip */
+  --cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M4 2.5v17l4.6-4.4 3.1 6.6 2.7-1.2-3.1-6.5h6.4z' fill='%23FFBFF5' stroke='black' stroke-width='1.6' stroke-linejoin='round'/%3E%3C/svg%3E") 4 2;
+}
+:root[data-theme="light"] {
+  --ground:   #ecebe6;
+  --sheet:    #f8f7f4;
+  --ink:      #161614;
+  --ink-2:    #75736d;
+  --rule:     #dcdad3;
+  --hover:    #f1efea;
+  --accent:   #3346e0;
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  background: var(--sheet);
+  color: var(--ink);
+  font-family: var(--f-title);
+  font-size: var(--title-size);   /* one size for all text */
+  font-weight: 500;
+  line-height: 1.02;
+  letter-spacing: -0.045em;
+  -webkit-font-smoothing: antialiased;
+  padding-left: max(32px, env(safe-area-inset-left, 0px));
+  padding-right: max(32px, env(safe-area-inset-right, 0px));
+  padding-block: 32px;
+  min-height: 100%;
+}
+
+.mono {
+  font-family: var(--f-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+html, body, * { cursor: var(--cursor), auto; }
+a, button { cursor: var(--cursor), pointer; }
+button { font: inherit; color: inherit; text-transform: inherit; letter-spacing: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+
+/* ---------- sheet ---------- */
+.sheet {
+  position: relative;
+  margin: 0 auto;
+  min-height: calc(100vh - 64px);
+  display: flex;
+  flex-direction: column;
+}
+
+/* printer's crop marks at the four trim corners */
+.crop { position: absolute; width: 0; height: 0; color: var(--ink-2); pointer-events: none; }
+.crop::before, .crop::after { content: ""; position: absolute; background: currentColor; }
+.crop::before { width: 16px; height: 1px; }
+.crop::after  { width: 1px; height: 16px; }
+.crop.tl { top: 0; left: 0; }     .crop.tl::before { top: 0; right: 6px; }    .crop.tl::after { left: 0; bottom: 6px; }
+.crop.tr { top: 0; right: 0; }    .crop.tr::before { top: 0; left: 6px; }     .crop.tr::after { right: 0; bottom: 6px; }
+.crop.bl { bottom: 0; left: 0; }  .crop.bl::before { bottom: 0; right: 6px; } .crop.bl::after { left: 0; top: 6px; }
+.crop.br { bottom: 0; right: 0; } .crop.br::before { bottom: 0; left: 6px; }  .crop.br::after { right: 0; top: 6px; }
+
+/* ---------- top bar ---------- */
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 24px;
+  padding: 28px var(--side) 0;
+}
+.top .name { text-decoration: none; color: var(--ink); }
+.top nav { display: flex; gap: 0.5em; }
+.top nav a { text-decoration: none; color: var(--ink-2); transition: color .15s; }
+.top nav a:hover { color: var(--ink); }
+
+/* ---------- list header ---------- */
+.bar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 16px 32px;
+  padding: clamp(72px, 14vh, 160px) var(--side) 20px;
+}
+
+/* ---------- index ---------- */
+.index { list-style: none; margin: 0; padding: 0 var(--side); }
+.row:first-child { border-top: 1px solid var(--rule); }
+.row-head {
+  display: grid;
+  grid-template-columns: var(--num-col) minmax(0, 1fr) auto auto;
+  column-gap: clamp(16px, 3vw, 48px);
+  align-items: first baseline;   /* number, type and date line up with a title's first line */
+  align-content: center;
+}
+
+.row { border-bottom: 1px solid var(--rule); }
+.row[hidden] { display: none; }
+a.row-head { text-decoration: none; color: inherit; }
+a.row-head:hover .title { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 0.12em; text-decoration-color: #7fa2c4; /* denim blue */ }
+.row-head {
+  width: 100%;
+  min-height: var(--row-h);
+  padding-block: 24px;
+}
+
+.num { color: var(--ink-2); }
+.title {
+  text-wrap: balance;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.meta-type, .meta-date { color: var(--ink-2); white-space: nowrap; }
+.meta-date { text-align: right; }
+/* ---------- info + contact ---------- */
+.lower {
+  margin-top: auto;
+  display: grid;
+  grid-template-columns: var(--num-col) minmax(0, 1fr);
+  column-gap: clamp(16px, 3vw, 48px);
+  row-gap: 1.2em;
+  padding: clamp(96px, 16vh, 180px) var(--side) clamp(48px, 8vh, 96px);
+}
+.lower section { min-width: 0; }
+.lower h2 { margin: 0; font: inherit; color: var(--ink-2); }
+.info { grid-column: 2; }
+.info p { margin: 0; text-wrap: pretty; }
+.contact { grid-column: 2; }
+.email-line { display: flex; align-items: baseline; gap: 0 0.4em; flex-wrap: wrap; }
+.email { user-select: all; overflow-wrap: anywhere; min-width: 0; }
+.copy { color: var(--ink-2); transition: color .15s; }
+.copy:hover { color: var(--ink); }
+.social { display: inline-block; text-decoration: none; color: var(--ink); margin-left: 0.4em; }
+.social:hover { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 0.12em; text-decoration-color: #7fa2c4; /* denim blue */ }
+
+/* ---------- mobile ---------- */
+@media (max-width: 760px) {
+  body { padding-block: 0; padding-left: 0; padding-right: 0; }
+  .sheet { min-height: 100vh; }
+  .crop { display: none; }
+  :root { --side: max(16px, env(safe-area-inset-left, 0px)); --row-h: auto; }
+  .top { padding-top: 22px; }
+  .bar { padding-top: 64px; }
+  .row-head {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas: "num title" ". meta";
+    column-gap: 14px;
+    row-gap: 10px;
+    padding-block: 28px;
+  }
+  .num { grid-area: num; }
+  :root { --title-size: clamp(2rem, 9vw, 3rem); }
+  .title { grid-area: title; }
+  .meta-type { grid-area: meta; white-space: normal; }
+  .meta-type::after { content: " · " attr(data-date); }
+  .meta-date { display: none; }
+  .lower { grid-template-columns: minmax(0, 1fr); padding-top: 96px; }
+  .info, .contact { grid-column: 1; }
+  .lower { padding-top: 72px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+</style>
+</head>
+<body>
+<div class="sheet">
+  <span class="crop tl" aria-hidden="true"></span><span class="crop tr" aria-hidden="true"></span>
+  <span class="crop bl" aria-hidden="true"></span><span class="crop br" aria-hidden="true"></span>
+  <header class="top">
+    <a class="name mono" href="#" id="site-name">Jane Xie</a>
+    <nav class="mono" aria-label="Site">
+      <a href="#info" hidden>Info</a>   <!-- hidden for now: remove `hidden` to bring back -->
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="bar">
+    </div>
+
+    <ol class="index" id="index"></ol>
+  </main>
+
+  <div class="lower">
+    <section class="info" id="info" hidden>   <!-- hidden for now -->
+      <h2 class="mono">Info</h2>
+      <p id="info-text"></p>
+    </section>
+    <section class="contact" id="contact">
+      <h2 class="mono">Contact</h2>
+      <div class="email-line">
+        <span class="email" id="email"></span>
+        <button class="copy mono" id="copy" type="button">Copy</button>
+        <a class="social" id="linkedin" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+    </section>
+  </div>
+
+</div>
+
+<script>
+/* =====================================================================
+   EDIT HERE. Everything on the page comes from SITE and PROJECTS.
+   To add a fifth project, copy one object in PROJECTS. Numbers are
+   assigned by position. Add `link` to make a row open a URL.
+   ===================================================================== */
+const SITE = {
+  name: "Jane Xie",                                   // top-left
+  info: "Designer who builds. I make interfaces, identities, and the occasional tool nobody asked for — then I make them work.",  // placeholder bio
+  email: "px34@cornell.edu",
+  linkedin: "https://www.linkedin.com/in/jane-xie/",
+  year: 2026,
+};
+
+const PROJECTS = [
+  {
+    title: "Linger",
+    type: "Design",
+    date: "2023.11",
+    page: "linger.html",   // optional: opens a project page on this site
+  },
+  {
+    title: "DBag",
+    type: "Design",
+    date: "2024.02",
+    page: "dbag.html",
+  },
+  {
+    title: "Pebble",
+    type: "Product",
+    date: "2026.03",
+    link: "https://pebblejournal.app/",   // optional: makes the whole row a link
+  },
+  {
+    title: "Blackstone",
+    type: "Product",
+    date: "2027.06",
+  },
+];
+
+/* ===================================================================== */
+
+const pad = n => String(n).padStart(2, "0");
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const $ = id => document.getElementById(id);
+
+// static copy
+$("site-name").textContent = SITE.name;
+$("info-text").textContent = SITE.info;
+$("email").textContent = SITE.email;
+$("linkedin").href = SITE.linkedin;
+
+// rows
+const list = $("index");
+PROJECTS.forEach((p, i) => {
+  const n = pad(i + 1);
+  const li = document.createElement("li");
+  li.className = "row";
+  const tag = (p.link || p.page) ? "a" : "div";
+  li.innerHTML = `
+    <${tag} class="row-head">
+      <span class="num mono" data-n="${n}">${n}</span>
+      <span class="title"></span>
+      <span class="meta-type mono" data-date="${p.date}"></span>
+      <span class="meta-date mono">${p.date}</span>
+    </${tag}>`;
+  if (p.link) {
+    const a = li.querySelector("a");
+    a.href = p.link; a.target = "_blank"; a.rel = "noopener";
+  } else if (p.page) {
+    li.querySelector("a").href = p.page;
+  }
+  li.querySelector(".title").textContent = p.title;
+  li.querySelector(".meta-type").textContent = p.type;
+  list.appendChild(li);
+});
+
+
+/* Mischief — row numbers scramble on hover before settling. */
+const GLYPHS = "0123456789#%&*+=?/";
+function scramble(el) {
+  if (reduceMotion || el._t) return;
+  const final = el.dataset.n;
+  let f = 0;
+  el._t = setInterval(() => {
+    f++;
+    el.textContent = final.split("").map((ch, i) =>
+      f > 6 + i * 3 ? ch : GLYPHS[Math.floor(Math.random() * GLYPHS.length)]).join("");
+    if (f > 6 + final.length * 3) { clearInterval(el._t); el._t = null; el.textContent = final; }
+  }, 38);
+}
+list.querySelectorAll(".row-head").forEach(h => {
+  const num = h.querySelector(".num");
+  h.addEventListener("mouseenter", () => scramble(num));
+});
+
+// copy email
+$("copy").addEventListener("click", () => {
+  const btn = $("copy");
+  const done = msg => { btn.textContent = msg; setTimeout(() => btn.textContent = "Copy", 1600); };
+  const fallback = () => {
+    const r = document.createRange(); r.selectNodeContents($("email"));
+    const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
+    done("Selected");
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(SITE.email).then(() => done("Copied"), fallback);
+  } else fallback();
+});
+</script>
+
+</body>
+</html>

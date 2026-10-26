@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Linger — Jane Xie</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Ccircle cx=%2716%27 cy=%2716%27 r=%2714%27 fill=%27%23FFBFF5%27 stroke=%27black%27 stroke-width=%272%27/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@500&display=swap">
+<style>
+/* Project page: date bar + close, centered title, overview paragraph, then a gallery of image pairs.
+   Same tokens as the homepage (index.html) so both pages read as one site. */
+:root {
+  --sheet:    #0e0e0d;   /* page background */
+  --ink:      #ecebe7;   /* titles, body */
+  --ink-2:    #8d8b85;   /* labels */
+  --rule:     #2a2927;   /* hairlines */
+  --ph-a:     #161615;   /* image placeholder stripes */
+  --ph-b:     #1b1b1a;
+  --accent:   #7c8cff;   /* focus only */
+  --pink:     #FFBFF5;   /* cursor */
+  --red:      #7fa2c4;   /* link hover underline (denim blue) */
+
+  --f-title: "Atkinson Hyperlegible Next", "Atkinson Hyperlegible", "Helvetica Neue", Arial, system-ui, sans-serif;
+  --title-size: clamp(2.1rem, 4.6vw, 4.25rem);   /* same as homepage project titles */
+  --text: clamp(1rem, 1.25vw, 1.25rem);
+  --side: clamp(8px, 1.2vw, 20px);
+  --gap: clamp(8px, 1vw, 16px);
+  color-scheme: dark;
+
+  --cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M4 2.5v17l4.6-4.4 3.1 6.6 2.7-1.2-3.1-6.5h6.4z' fill='%23FFBFF5' stroke='black' stroke-width='1.6' stroke-linejoin='round'/%3E%3C/svg%3E") 4 2;
+}
+:root[data-theme="light"] {
+  --sheet:    #f8f7f4;
+  --ink:      #161614;
+  --ink-2:    #75736d;
+  --rule:     #dcdad3;
+  --ph-a:     #eeece6;
+  --ph-b:     #e7e5de;
+  --accent:   #3346e0;
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+html, body, * { cursor: var(--cursor), auto; }
+a, button { cursor: var(--cursor), pointer; }
+body {
+  margin: 0;
+  background: var(--sheet);
+  color: var(--ink);
+  font-family: var(--f-title);
+  font-size: var(--text);
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  padding-left: max(32px, env(safe-area-inset-left, 0px));
+  padding-right: max(32px, env(safe-area-inset-right, 0px));
+  padding-block: max(32px, env(safe-area-inset-top, 0px)) max(32px, env(safe-area-inset-bottom, 0px));
+}
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+
+.sheet { position: relative; min-height: calc(100vh - 64px); padding-inline: var(--side); }
+
+/* printer's crop marks, as on the homepage */
+.crop { position: absolute; width: 0; height: 0; color: var(--ink-2); pointer-events: none; }
+.crop::before, .crop::after { content: ""; position: absolute; background: currentColor; }
+.crop::before { width: 16px; height: 1px; }
+.crop::after  { width: 1px; height: 16px; }
+.crop.tl { top: 0; left: 0; }     .crop.tl::before { top: 0; right: 6px; }    .crop.tl::after { left: 0; bottom: 6px; }
+.crop.tr { top: 0; right: 0; }    .crop.tr::before { top: 0; left: 6px; }     .crop.tr::after { right: 0; bottom: 6px; }
+.crop.bl { bottom: 0; left: 0; }  .crop.bl::before { bottom: 0; right: 6px; } .crop.bl::after { left: 0; top: 6px; }
+.crop.br { bottom: 0; right: 0; } .crop.br::before { bottom: 0; left: 6px; }  .crop.br::after { right: 0; top: 6px; }
+
+/* ---------- top bar ---------- */
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  padding-block: 20px 16px;
+  border-bottom: 1px solid var(--rule);
+}
+.dates { color: var(--ink); }
+.close {
+  width: 32px; height: 32px; flex: none;
+  position: relative;
+  color: var(--ink);
+  text-decoration: none;
+}
+.close::before, .close::after {
+  content: ""; position: absolute; left: 50%; top: 50%;
+  width: 30px; height: 1.5px; margin: -0.75px 0 0 -15px;
+  background: currentColor;
+  transition: background .15s;
+}
+.close::before { transform: rotate(45deg); }
+.close::after  { transform: rotate(-45deg); }
+.close:hover { color: var(--pink); }
+
+/* ---------- title ---------- */
+.title {
+  margin: 0;
+  padding-block: clamp(80px, 13vh, 150px) clamp(64px, 10vh, 120px);
+  text-align: center;
+  font-size: var(--title-size);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 1;
+}
+
+/* ---------- brief ---------- */
+.brief {
+  display: grid;
+  padding-bottom: clamp(56px, 9vh, 100px);
+  border-bottom: 1px solid var(--rule);
+}
+.brief p {
+  margin: 0;
+  max-width: 75%;
+  font-size: clamp(1.5rem, 2.6vw, 2.5rem);
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+  text-wrap: pretty;
+}
+
+/* ---------- gallery ---------- */
+.gallery { display: grid; gap: var(--gap); padding-top: 40px; }
+/* columns are sized from each image's ratio, so both images in a row share one height and nothing is cropped */
+.row { display: grid; gap: var(--gap); }
+.img {
+  margin: 0;
+  max-width: 100%;
+  min-height: 0;
+  overflow: hidden;
+  background: repeating-linear-gradient(135deg, var(--ph-a) 0 14px, var(--ph-b) 14px 28px);
+  display: grid;
+  place-items: center;
+  color: var(--ink-2);
+  font-size: 0.8em;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-align: center;
+  padding: 16px;
+}
+.img.has-photo { padding: 0; background: none; }
+.img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.back {
+  display: inline-block;
+  margin-top: 48px;
+  color: var(--ink-2);
+  text-decoration: none;
+}
+.back:hover { color: var(--ink); text-decoration: underline; text-decoration-color: var(--red); text-decoration-thickness: 2px; text-underline-offset: 0.18em; }
+
+/* ---------- mobile ---------- */
+@media (max-width: 760px) {
+  body { padding-left: 0; padding-right: 0; padding-block: 0 24px; }
+  .sheet { padding-inline: max(16px, env(safe-area-inset-left, 0px)); min-height: 100vh; }
+  .crop { display: none; }
+  .title { padding-block: 72px 56px; }
+  .brief p { max-width: none; }
+  .row { grid-template-columns: minmax(0, 1fr) !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; }
+}
+</style>
+</head>
+<body>
+<div class="sheet">
+  <span class="crop tl" aria-hidden="true"></span><span class="crop tr" aria-hidden="true"></span>
+  <span class="crop bl" aria-hidden="true"></span><span class="crop br" aria-hidden="true"></span>
+
+  <header class="top">
+    <span class="dates" id="dates"></span>
+    <a class="close" href="index.html" aria-label="Back to all projects"></a>
+  </header>
+
+  <h1 class="title" id="title"></h1>
+
+  <div class="brief">
+    <p id="overview"></p>
+  </div>
+
+  <div class="gallery" id="gallery"></div>
+
+  <a class="back" href="index.html">← All projects</a>
+</div>
+
+<script>
+/* =====================================================================
+   EDIT HERE. Everything on this page comes from PROJECT.
+   GALLERY is a list of rows. Each image has a `ratio` (width / height);
+   images in a row share one height. One image runs full width.
+   ===================================================================== */
+const PROJECT = {
+  title: "Linger",
+  dates: "September, 2023 → November, 2023",
+  overview: "A piece of 3D modelling work created using Rhino and rendered by Blender. It features a unique set of glasses for martinis, wine, and whiskey. They are imbalanced yet harmonious; vivid yet peaceful. They can hold wine, or perhaps something more. But ultimately, all we can ask for is a little more time to linger.",
+};
+
+const GALLERY = [
+  [ { src: "images/linger/01.jpg", ratio: 1,       alt: "Coupe glass with a stacked, tilted stem" },
+    { src: "images/linger/02.jpg", ratio: 2 / 3,   alt: "Close-up of two glasses and their stems" } ],
+  [ { src: "images/linger/03.jpg", ratio: 1,       alt: "Wine glass with a cube stem" },
+    { src: "images/linger/04.jpg", ratio: 2 / 3,   alt: "Close-up of a glass rim and curve" } ],
+  [ { src: "images/linger/05.jpg", ratio: 1,       alt: "Five whiskey tumblers and their shadows" },
+    { src: "images/linger/06.jpg", ratio: 1,       alt: "The full set of four glasses" } ],
+  [ { src: "images/linger/07.jpg", ratio: 1920 / 815, alt: "The full set, wide view" } ],
+];
+
+/* ===================================================================== */
+
+const $ = id => document.getElementById(id);
+$("title").textContent = PROJECT.title;
+$("dates").textContent = PROJECT.dates;
+$("overview").textContent = PROJECT.overview;
+
+let count = 0;
+const gallery = $("gallery");
+GALLERY.forEach(row => {
+  const r = document.createElement("div");
+  r.className = "row";
+  r.style.gridTemplateColumns = row.map(it => `minmax(0, ${it.ratio || 1}fr)`).join(" ");
+  row.forEach(item => {
+    count++;
+    const fig = document.createElement("figure");
+    fig.className = "img";
+    fig.style.aspectRatio = item.ratio || 1;
+    if (item.src) {
+      const img = new Image();
+      img.src = item.src; img.alt = item.alt; img.loading = "lazy";
+      fig.classList.add("has-photo");
+      fig.appendChild(img);
+    } else {
+      fig.textContent = `Image ${String(count).padStart(2, "0")}`;
+      fig.setAttribute("aria-label", `Placeholder for: ${item.alt}`);
+    }
+    r.appendChild(fig);
+  });
+  gallery.appendChild(r);
+});
+</script>
+</body>
+</html>
