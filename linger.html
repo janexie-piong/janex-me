@@ -99,7 +99,6 @@ a { color: inherit; }
 }
 .close::before { transform: rotate(45deg); }
 .close::after  { transform: rotate(-45deg); }
-.close:hover { color: var(--pink); }
 
 /* ---------- title ---------- */
 .title {
@@ -155,7 +154,19 @@ a { color: inherit; }
   color: var(--ink-2);
   text-decoration: none;
 }
-.back:hover { color: var(--ink); text-decoration: underline; text-decoration-color: var(--red); text-decoration-thickness: 2px; text-underline-offset: 0.18em; }
+
+/* hover effects only where there's a real mouse */
+@media (hover: hover) and (pointer: fine) {
+  .close:hover { color: var(--pink); }
+  .back:hover { color: var(--ink); text-decoration: underline; text-decoration-color: var(--red); text-decoration-thickness: 2px; text-underline-offset: 0.18em; }
+}
+
+/* touch: no hover states (they stick after a tap), no grey tap flash; a brief dim while pressed instead */
+a { -webkit-tap-highlight-color: transparent; }
+@media (hover: none) {
+  .close, .back { transition: opacity .12s; }
+  .close:active, .back:active { opacity: .5; }
+}
 
 /* ---------- mobile ---------- */
 @media (max-width: 760px) {

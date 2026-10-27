@@ -104,7 +104,6 @@ button { font: inherit; color: inherit; text-transform: inherit; letter-spacing:
 .top .name { text-decoration: none; color: var(--ink); }
 .top nav { display: flex; gap: 0.5em; }
 .top nav a { text-decoration: none; color: var(--ink-2); transition: color .15s; }
-.top nav a:hover { color: var(--ink); }
 
 /* ---------- list header ---------- */
 .bar {
@@ -130,7 +129,6 @@ button { font: inherit; color: inherit; text-transform: inherit; letter-spacing:
 .row { border-bottom: 1px solid var(--rule); }
 .row[hidden] { display: none; }
 a.row-head { text-decoration: none; color: inherit; }
-a.row-head:hover .title { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 0.12em; text-decoration-color: #7fa2c4; /* denim blue */ }
 .row-head {
   width: 100%;
   min-height: var(--row-h);
@@ -162,9 +160,22 @@ a.row-head:hover .title { text-decoration: underline; text-decoration-thickness:
 .email-line { display: flex; align-items: baseline; gap: 0 0.4em; flex-wrap: wrap; }
 .email { user-select: all; overflow-wrap: anywhere; min-width: 0; }
 .copy { color: var(--ink-2); transition: color .15s; }
-.copy:hover { color: var(--ink); }
 .social { display: inline-block; text-decoration: none; color: var(--ink); margin-left: 0.4em; }
-.social:hover { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 0.12em; text-decoration-color: #7fa2c4; /* denim blue */ }
+
+/* hover effects only where there's a real mouse */
+@media (hover: hover) and (pointer: fine) {
+  .top nav a:hover { color: var(--ink); }
+  a.row-head:hover .title { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 0.12em; text-decoration-color: #7fa2c4; /* denim blue */ }
+  .copy:hover { color: var(--ink); }
+  .social:hover { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 0.12em; text-decoration-color: #7fa2c4; /* denim blue */ }
+}
+
+/* touch: no hover states (they stick after a tap), no grey tap flash; a brief dim while pressed instead */
+a, button { -webkit-tap-highlight-color: transparent; }
+@media (hover: none) {
+  a.row-head .title, .top nav a, .copy, .social { transition: opacity .12s; }
+  a.row-head:active .title, .top nav a:active, .copy:active, .social:active { opacity: .5; }
+}
 
 /* ---------- mobile ---------- */
 @media (max-width: 760px) {
@@ -324,7 +335,8 @@ function scramble(el) {
     if (f > 6 + final.length * 3) { clearInterval(el._t); el._t = null; el.textContent = final; }
   }, 38);
 }
-list.querySelectorAll(".row-head").forEach(h => {
+// scramble is a mouse thing; on phones it only flashes before the page changes
+if (matchMedia("(hover: hover) and (pointer: fine)").matches) list.querySelectorAll(".row-head").forEach(h => {
   const num = h.querySelector(".num");
   h.addEventListener("mouseenter", () => scramble(num));
 });
